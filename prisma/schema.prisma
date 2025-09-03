@@ -1,0 +1,163 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  preferences   Json?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  tabs        Tab[]
+  userActions UserAction[]
+  archives    Archive[]
+  accounts    Account[]
+  sessions    Session[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Tab {
+  id        String   @id @default(uuid())
+  userId    String
+  name      String
+  color     String
+  icon      String
+  keywords  Json     @default("[]")
+  sources   Json     @default("[]")
+  filters   Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  articles  Article[]
+  schedules Schedule[]
+
+  @@index([userId])
+}
+
+model Article {
+  id           String    @id @default(uuid())
+  tabId        String
+  url          String
+  title        String
+  summary      String
+  content      String?
+  thumbnailUrl String?
+  source       String
+  metadata     Json?
+  publishedAt  DateTime?
+  fetchedAt    DateTime  @default(now())
+
+  tab         Tab          @relation(fields: [tabId], references: [id], onDelete: Cascade)
+  userActions UserAction[]
+  archives    Archive[]
+
+  @@unique([tabId, url])
+  @@index([tabId])
+  @@index([fetchedAt])
+  @@index([publishedAt])
+}
+
+enum ActionType {
+  READ
+  FAVORITE
+  HIGHLIGHT
+  NOTE
+  TAG
+  RATE
+}
+
+model UserAction {
+  id         String     @id @default(uuid())
+  userId     String
+  articleId  String
+  actionType ActionType
+  highlights Json?
+  notes      String?
+  tags       Json?
+  rating     Int?
+  createdAt  DateTime   @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId, actionType])
+  @@index([userId])
+  @@index([articleId])
+}
+
+model Archive {
+  id         String   @id @default(uuid())
+  userId     String
+  articleId  String
+  reason     String?
+  tags       Json?
+  archivedAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([userId])
+  @@index([archivedAt])
+}
+
+model Schedule {
+  id             String    @id @default(uuid())
+  tabId          String
+  cronExpression String
+  isActive       Boolean   @default(true)
+  lastRun        DateTime?
+  nextRun        DateTime?
+
+  tab Tab @relation(fields: [tabId], references: [id], onDelete: Cascade)
+
+  @@index([tabId])
+  @@index([nextRun])
+}
