@@ -48,7 +48,7 @@ export function EditTabDialog({ tab, open, onOpenChange }: EditTabDialogProps) {
   const [advancedSettings, setAdvancedSettings] = useState({
     excludeKeywords: tab.excludeKeywords || [],
     searchOperator: tab.searchOperator || 'OR',
-    searchSources: tab.searchSources || ['qiita', 'zenn', 'hatena', 'itmedia', 'techcrunch', 'publickey', 'github', 'duckduckgo'],
+    searchSources: tab.searchSources,
     customRssFeeds: tab.customRssFeeds || [],
     usePremiumAPIs: tab.usePremiumAPIs || false,
     sourceLimits: tab.sourceLimits || {},

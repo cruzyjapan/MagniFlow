@@ -55,7 +55,7 @@ export function CreateTabDialog({ open, onOpenChange }: CreateTabDialogProps) {
   const [advancedSettings, setAdvancedSettings] = useState({
     excludeKeywords: [],
     searchOperator: 'OR' as 'OR' | 'AND',
-    searchSources: [],
+    searchSources: undefined as string[] | undefined,
     customRssFeeds: [],
     usePremiumAPIs: false,
     sourceLimits: {},
@@ -91,6 +91,7 @@ export function CreateTabDialog({ open, onOpenChange }: CreateTabDialogProps) {
         excludeKeywords: advancedSettings.excludeKeywords,
         searchOperator: advancedSettings.searchOperator,
         sources: [],
+        searchSources: advancedSettings.searchSources,
         filters: advancedSettings.filters,
         customRssFeeds: advancedSettings.customRssFeeds,
         usePremiumAPIs: advancedSettings.usePremiumAPIs,
@@ -104,6 +105,7 @@ export function CreateTabDialog({ open, onOpenChange }: CreateTabDialogProps) {
       setAdvancedSettings({
         excludeKeywords: [],
         searchOperator: 'OR',
+        searchSources: undefined,
         customRssFeeds: [],
         usePremiumAPIs: false,
         sourceLimits: {},

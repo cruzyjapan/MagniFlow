@@ -280,9 +280,9 @@ export function AdvancedTabSettings({ settings, onChange }: AdvancedTabSettingsP
                 <div key={source.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
                     <Switch
-                      checked={settings.searchSources?.includes(source.id) ?? true}
+                      checked={settings.searchSources ? settings.searchSources.includes(source.id) : false}
                       onCheckedChange={(checked) => {
-                        const sources = settings.searchSources || ['qiita', 'zenn', 'hatena', 'itmedia', 'techcrunch', 'publickey', 'github', 'duckduckgo']
+                        const sources = settings.searchSources || []
                         onChange({
                           ...settings,
                           searchSources: checked
@@ -316,7 +316,7 @@ export function AdvancedTabSettings({ settings, onChange }: AdvancedTabSettingsP
                           }
                         })
                       }}
-                      disabled={!settings.searchSources?.includes(source.id) && settings.searchSources !== undefined}
+                      disabled={settings.searchSources ? !settings.searchSources.includes(source.id) : true}
                     />
                   </div>
                 </div>
